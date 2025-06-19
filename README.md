@@ -21,6 +21,7 @@ This project is a full stack web application designed for a bookshop. It provide
 git clone https://github.com/Nhaaa4/Book-Online-Shop.git
 cd Book-Online-Shop
 ```
+---
 ### 3. Backend Setup
 1. Install depandancies
 ```bash
@@ -38,6 +39,7 @@ npx sequelize-cli db:seed:all
 ```bash
 npm run dev
 ```
+---
 ### 4. Frontend Setup
 1. Install depandancies
 ```bash
