@@ -1,27 +1,18 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Addresses', {
+  await queryInterface.createTable('Orders', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    Street: {
+    orderDate: {
       type: Sequelize.STRING
     },
-    City: {
-      type: Sequelize.STRING
-    },
-    State: {
-      type: Sequelize.STRING
-    },
-    ZipCode: {
-      type: Sequelize.STRING
-    },
-    Country: {
-      type: Sequelize.STRING
+    total: {
+      type: Sequelize.FLOAT
     },
     createdAt: {
       allowNull: false,
@@ -34,5 +25,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Addresses');
+  await queryInterface.dropTable('Orders');
 }

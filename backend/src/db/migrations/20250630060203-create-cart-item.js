@@ -1,18 +1,15 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Payments', {
+  await queryInterface.createTable('CartItems', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    CustomerID: {
+    quantity: {
       type: Sequelize.INTEGER
-    },
-    PaymentDate: {
-      type: Sequelize.DATE
     },
     createdAt: {
       allowNull: false,
@@ -25,5 +22,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Payments');
+  await queryInterface.dropTable('CartItems');
 }

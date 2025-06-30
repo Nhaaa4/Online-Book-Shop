@@ -1,27 +1,15 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Orders', {
+  await queryInterface.createTable('communes', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    OrderDate: {
-      type: Sequelize.DATE
-    },
-    Total: {
-      type: Sequelize.DECIMAL
-    },
-    PaymentID: {
-      type: Sequelize.INTEGER
-    },
-    CustomerID: {
-      type: Sequelize.INTEGER
-    },
-    ShipID: {
-      type: Sequelize.INTEGER
+    communeName: {
+      type: Sequelize.STRING
     },
     createdAt: {
       allowNull: false,
@@ -34,5 +22,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Orders');
+  await queryInterface.dropTable('communes');
 }

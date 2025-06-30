@@ -9,24 +9,25 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Customer.hasMany(models.Review, {foreignKey: 'reviewID'})
+      Customer.hasMany(models.Payment, {foreignKey: 'paymentID'})
+      Customer.hasMany(models.Orders, {foreignKey: 'orderID'})
+      Customer.belongsToMany(models.villages, {foreignKey: 'villageID'})
+      
     }
   }
   Customer.init({
-    Name: DataTypes.STRING,
-    Email: DataTypes.STRING,
-    Password: DataTypes.STRING,
-    PhoneNumber: DataTypes.STRING,
-    AddressID: DataTypes.INTEGER
+    fname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    lname: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
+    phonenumber: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Customer',
-    timestamps: true
   });
-  Customer.associate = (models) => {
-    Customer.belongsTo(models.Address, { foreignKey: 'AddressID' });
-    Customer.hasMany(models.Payment, { foreignKey: 'CustomerID' });
-    Customer.hasMany(models.Orders, { foreignKey: 'CustomerID' });
-    Customer.hasMany(models.Review, { foreignKey: 'CustomerID' });
-  };
   return Customer;
 };

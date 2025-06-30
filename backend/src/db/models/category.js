@@ -9,15 +9,15 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Category.hasMany(models.Book, {foreignKey: 'bookID'})
     }
   }
   Category.init({
-    CategoryID: DataTypes.INTEGER,
-    CategoryName: DataTypes.STRING
+    CategoryName: DataTypes.STRING,
+    description: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Category',
-    timestamps: true
   });
   return Category;
 };

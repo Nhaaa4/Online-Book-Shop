@@ -1,7 +1,7 @@
 'use strict';
 import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
-  class shipMethod extends Model {
+  class villages extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,15 +9,15 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      shipMethod.belongsToMany(models.Orders, {foreignKey: 'orderID'})
+      villages.hasMany(models.Customer, {foreignKey: 'customerID'})
+      villages.belongsTo(models.communes, {foreignKey: 'communeID'})
     }
   }
-  shipMethod.init({
-    methodName: DataTypes.STRING,
-    cost: DataTypes.FLOAT
+  villages.init({
+    villageName: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'shipMethod',
+    modelName: 'villages',
   });
-  return shipMethod;
+  return villages;
 };

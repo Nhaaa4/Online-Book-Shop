@@ -9,19 +9,15 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Author.hasMany(models.Book, {foreignKey: 'bookID'})
     }
   }
   Author.init({
-    AuthorID: DataTypes.INTEGER,
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Author',
-    timestamps: true
   });
-  Author.associate = (models) => {
-    Author.hasMany(models.Book, { foreignKey: 'BookId' })
-  }
   return Author;
 };
