@@ -8,9 +8,6 @@ export async function up(queryInterface, Sequelize) {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    AuthorID: {
-      type: Sequelize.INTEGER
-    },
     firstName: {
       type: Sequelize.STRING
     },
