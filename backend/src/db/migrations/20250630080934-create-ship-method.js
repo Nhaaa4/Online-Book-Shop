@@ -1,18 +1,18 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Categories', {
+  await queryInterface.createTable('shipMethods', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    CategoryID: {
-      type: Sequelize.INTEGER
-    },
-    CategoryName: {
+    shipMethod: {
       type: Sequelize.STRING
+    },
+    cost: {
+      type: Sequelize.FLOAT
     },
     createdAt: {
       allowNull: false,
@@ -25,5 +25,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Categories');
+  await queryInterface.dropTable('shipMethods');
 }

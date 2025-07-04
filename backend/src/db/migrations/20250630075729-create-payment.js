@@ -1,20 +1,14 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Authors', {
+  await queryInterface.createTable('Payments', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    AuthorID: {
-      type: Sequelize.INTEGER
-    },
-    firstName: {
-      type: Sequelize.STRING
-    },
-    lastName: {
+    paymentDate: {
       type: Sequelize.STRING
     },
     createdAt: {
@@ -28,5 +22,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Authors');
+  await queryInterface.dropTable('Payments');
 }

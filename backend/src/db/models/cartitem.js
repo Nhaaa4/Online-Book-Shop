@@ -9,20 +9,15 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      CartItem.belongsTo(models.Book, {foreignKey: 'bookID'})
+      CartItem.belongsTo(models.Orders, {foreignKey: 'orderID'})
     }
   }
   CartItem.init({
-    OrderID: DataTypes.INTEGER,
-    BookID: DataTypes.INTEGER,
-    Quantity: DataTypes.INTEGER
+    quantity: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'CartItem',
-    timestamps: true
   });
-  CartItem.associate = (models) => {
-    CartItem.belongsTo(models.Orders, { foreignKey: 'OrderID' });
-    CartItem.belongsTo(models.Book, { foreignKey: 'BookID' });
-  };
   return CartItem;
 };

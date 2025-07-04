@@ -1,7 +1,7 @@
 'use strict';
 import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
-  class Address extends Model {
+  class provinces extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,21 +9,14 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      provinces.hasMany(models.districts, {foreignKey: 'districtID'})
     }
   }
-  Address.init({
-    Street: DataTypes.STRING,
-    City: DataTypes.STRING,
-    State: DataTypes.STRING,
-    ZipCode: DataTypes.STRING,
-    Country: DataTypes.STRING
+  provinces.init({
+    provinceName: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Address',
-    timestamps: true
+    modelName: 'provinces',
   });
-  Address.associate = (models) => {
-    Address.hasMany(models.Customer, { foreignKey: 'AddressId' })
-  }
-  return Address;
+  return provinces;
 };

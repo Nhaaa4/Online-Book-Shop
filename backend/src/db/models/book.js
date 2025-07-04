@@ -9,6 +9,10 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Book.belongsToMany(models.Author, { foreignKey: 'authorID'})
+      Book.belongsToMany(models.Category, {foreignKey: 'categoryID'})
+      Book.hasMany(models.Review, {foreignKey: 'reviewID'})
+      Book.hasMany(models.CartItem, {foreignKey: 'bookID'})
     }
   }
   Book.init({
@@ -21,13 +25,6 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Book',
-    timestamps: true
   });
-  Book.associate = (models) => {
-    Book.belongsTo(models.Category, { foreignKey: 'CategoryID' });
-    Book.belongsTo(models.Author, { foreignKey: 'AuthorID' });
-    Book.hasMany(models.CartItem, { foreignKey: 'BookID' });
-    Book.hasMany(models.Review, { foreignKey: 'BookID' });
-  };
   return Book;
 };

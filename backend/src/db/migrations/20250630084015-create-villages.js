@@ -1,27 +1,15 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Reviews', {
+  await queryInterface.createTable('villages', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    CustomerID: {
-      type: Sequelize.INTEGER
-    },
-    BookID: {
-      type: Sequelize.INTEGER
-    },
-    Rating: {
-      type: Sequelize.INTEGER
-    },
-    Comment: {
-      type: Sequelize.TEXT
-    },
-    created_at: {
-      type: Sequelize.DATE
+    villageName: {
+      type: Sequelize.STRING
     },
     createdAt: {
       allowNull: false,
@@ -34,5 +22,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Reviews');
+  await queryInterface.dropTable('villages');
 }

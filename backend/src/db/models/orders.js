@@ -1,6 +1,8 @@
 'use strict';
-import { Model } from 'sequelize';
-export default (sequelize, DataTypes) => {
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
   class Orders extends Model {
     /**
      * Helper method for defining associations.
@@ -9,24 +11,19 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Orders.belongsTo(models.CUstomer, {foreignKey: 'customerID'})
+      Orders.hasOne(models.Payment, {foreignKey: 'paymentID'})
+      Orders.hasMany(models.CartItem, {foreignKey: 'orderID'})
+      Orders.belongsToMany(models.shipMethod, {foreignKey: 'shipID'})
     }
   }
   Orders.init({
-    OrderDate: DataTypes.DATE,
-    Total: DataTypes.DECIMAL,
-    PaymentID: DataTypes.INTEGER,
-    CustomerID: DataTypes.INTEGER,
-    ShipID: DataTypes.INTEGER
+    orderDate: DataTypes.STRING,
+    total: DataTypes.FLOAT,
+    orderStatus: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Orders',
-    timestamps: true
   });
-  Orders.associate = (models) => {
-    Orders.belongsTo(models.Customer, { foreignKey: 'CustomerID' });
-    Orders.belongsTo(models.Payment, { foreignKey: 'PaymentID' });
-    Orders.belongsTo(models.ShipMethod, { foreignKey: 'ShipID' });
-    Orders.hasMany(models.CartItem, { foreignKey: 'OrderID' });
-  };
   return Orders;
 };

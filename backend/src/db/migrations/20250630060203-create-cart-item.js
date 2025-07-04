@@ -1,26 +1,14 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Customers', {
+  await queryInterface.createTable('CartItems', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    Name: {
-      type: Sequelize.STRING
-    },
-    Email: {
-      type: Sequelize.STRING
-    },
-    Password: {
-      type: Sequelize.STRING
-    },
-    PhoneNumber: {
-      type: Sequelize.STRING
-    },
-    AddressID: {
+    quantity: {
       type: Sequelize.INTEGER
     },
     createdAt: {
@@ -34,5 +22,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable('Customers');
+  await queryInterface.dropTable('CartItems');
 }
