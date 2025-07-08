@@ -1,7 +1,7 @@
 'use strict';
 import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
-  class Payment extends Model {
+  class RolePermission extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,15 +9,16 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Payment.belongsTo(models.User, { foreignKey: 'user_id' });
-      Payment.belongsTo(models.Order, { foreignKey: 'order_id' });
+      RolePermission.belongsTo(models.Role, { foreignKey: 'role_id' });
+      RolePermission.belongsTo(models.Permission, { foreignKey: 'permission_id' });
     }
   }
-  Payment.init({
-    
+  RolePermission.init({
+    role_id: DataTypes.INTEGER,
+    permission_id: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Payment',
+    modelName: 'RolePermission',
   });
-  return Payment;
+  return RolePermission;
 };

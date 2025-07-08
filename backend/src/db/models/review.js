@@ -9,13 +9,13 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Review.belongsTo(models.Book, {foreignKey: 'bookID'})
-      Review.belongsTo(models.Customer, {foreignKey: 'customerID'})
+      this.belongsTo(models.User, { foreignKey: 'user_id' });
+      this.belongsTo(models.Book, { foreignKey: 'book_id' });
     }
   }
   Review.init({
-    rating: DataTypes.STRING,
-    comment: DataTypes.STRING
+    rating: DataTypes.INTEGER,
+    comment: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Review',

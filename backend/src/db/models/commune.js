@@ -1,7 +1,7 @@
 'use strict';
 import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
-  class Payment extends Model {
+  class Commune extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,15 +9,15 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Payment.belongsTo(models.User, { foreignKey: 'user_id' });
-      Payment.belongsTo(models.Order, { foreignKey: 'order_id' });
+      Commune.belongsTo(models.District, { foreignKey: 'district_id' });
+      Commune.hasMany(models.Village, { foreignKey: 'commune_id' });
     }
   }
-  Payment.init({
-    
+  Commune.init({
+    name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Payment',
+    modelName: 'Commune',
   });
-  return Payment;
+  return Commune;
 };

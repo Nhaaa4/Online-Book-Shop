@@ -1,7 +1,7 @@
 'use strict';
 import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
-  class Payment extends Model {
+  class ShippingMethod extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,15 +9,15 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Payment.belongsTo(models.User, { foreignKey: 'user_id' });
-      Payment.belongsTo(models.Order, { foreignKey: 'order_id' });
+      ShippingMethod.hasMany(models.Order, { foreignKey: 'ship_method_id' });
     }
   }
-  Payment.init({
-    
+  ShippingMethod.init({
+    method_name: DataTypes.STRING,
+    cost: DataTypes.DECIMAL
   }, {
     sequelize,
-    modelName: 'Payment',
+    modelName: 'ShippingMethod',
   });
-  return Payment;
+  return ShippingMethod;
 };
