@@ -35,6 +35,30 @@ export async function up(queryInterface, Sequelize) {
       category_id: 1,
       createdAt: new Date(),
       updatedAt: new Date()
+    },
+    {
+      isbn: '0195153448',
+      title: 'Classical Mythology',
+      description: 'Advanced CSS techniques.',
+      price: 25.00,
+      stock_quantity: 5,
+      image_url: 'http://images.amazon.com/images/P/0195153448.01.LZZZZZZZ.jpg',
+      author_id: 2,
+      category_id: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      isbn: '0002005018',
+      title: 'Clara Callan',
+      description: 'Advanced CSS techniques.',
+      price: 25.00,
+      stock_quantity: 5,
+      image_url: 'http://images.amazon.com/images/P/0002005018.01.LZZZZZZZ.jpg',
+      author_id: 2,
+      category_id: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   ]);
 }

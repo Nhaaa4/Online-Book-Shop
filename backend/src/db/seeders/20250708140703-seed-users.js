@@ -11,6 +11,7 @@ export async function up(queryInterface, Sequelize) {
    *   isBetaMember: false
    * }], {});
   */
+  
 }
 export async function down(queryInterface, Sequelize) {
   /**

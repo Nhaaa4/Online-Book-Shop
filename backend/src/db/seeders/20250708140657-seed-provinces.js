@@ -11,6 +11,13 @@ export async function up(queryInterface, Sequelize) {
    *   isBetaMember: false
    * }], {});
   */
+  await queryInterface.bulkInsert('Provinces', [
+    {
+      name: 'Kandal',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ])
 }
 export async function down(queryInterface, Sequelize) {
   /**
@@ -19,4 +26,5 @@ export async function down(queryInterface, Sequelize) {
    * Example:
    * await queryInterface.bulkDelete('People', null, {});
    */
+  await queryInterface.bulkDelete('Provinces', null, {});
 }
