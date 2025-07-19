@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import Book from "@/components/Book";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -48,7 +48,6 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <Badge className="bg-pink-100 text-pink-700 px-4 py-2">📚 Over 1 Million Books Available</Badge>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
                   Your Next Great
                   <span className="text-pink-500 block">Adventure Awaits</span>
@@ -100,7 +99,7 @@ export default function Home() {
                       <CardContent className="p-4">
                         <div className="aspect-[3/4] relative mb-3 overflow-hidden rounded-lg">
                           <img
-                            src={book.image_url || "/placeholder.svg"}
+                            src={book?.image_url || "/placeholder.svg"}
                             alt={book.title}
                             fill
                             className="w-full h-full group-hover:scale-105 transition-transform"
@@ -181,42 +180,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredBooks.map((book) => (
-              <Card
-                key={book.id}
-                className="group hover:shadow-xl transition-all duration-300 border-pink-100 bg-white"
-                onClick={() => navigate(`/books/${book.id}`)}
-              >
-                <CardContent className="p-6">
-                  <div className="aspect-[3/4] relative mb-4 overflow-hidden rounded-lg">
-                    <img
-                      src={book.image_url || "/placeholder.svg"}
-                      alt={book.title}
-                      fill
-                      className="w-full h-full group-hover:scale-105 transition-transform"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors">
-                    {book.title}
-                  </h3>
-                  <p className="text-gray-600 mb-3">{book?.Author?.first_name} {book?.Author?.last_name}</p>
-                  <div className="flex items-center mb-3">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < Math.floor(book.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600 ml-2">({book.reviews})</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl font-bold text-pink-600">${book.price}</span>
-                  </div>
-                </CardContent>
-              </Card>
+              <Book key={book.id} book={book} />
             ))}
           </div>
 

@@ -10,14 +10,14 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Order.belongsTo(models.User, { foreignKey: 'user_id' });
-      Order.belongsTo(models.ShippingMethod, { foreignKey: 'ship_method_id' });
       Order.hasMany(models.CartItem, { foreignKey: 'order_id' });
-      Order.hasOne(models.Payment, { foreignKey: 'order_id' });
     }
   }
   Order.init({
     order_status: DataTypes.STRING,
-    total_amount: DataTypes.DECIMAL
+    total_amount: DataTypes.DECIMAL,
+    payment_method: DataTypes.STRING,
+    payment_status: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'Order',

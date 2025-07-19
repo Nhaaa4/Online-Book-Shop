@@ -17,20 +17,18 @@ export async function up(queryInterface, Sequelize) {
       },
       onDelete: 'RESTRICT',
     },
-    ship_method_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'ShippingMethods',
-        key: 'id',
-      },
-      onDelete: 'RESTRICT',
-    },
     order_status: {
       type: Sequelize.STRING
     },
     total_amount: {
       type: Sequelize.DECIMAL
+    },
+    payment_method: {
+      type: Sequelize.STRING
+    },
+    payment_status: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
     },
     createdAt: {
       allowNull: false,

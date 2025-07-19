@@ -11,6 +11,14 @@ export async function up(queryInterface, Sequelize) {
    *   isBetaMember: false
    * }], {});
   */
+  await queryInterface.bulkInsert('Villages', [
+    { name: 'Village A', commune_id: 4, createdAt: new Date(), updatedAt: new Date() },
+    { name: 'Village B', commune_id: 1, createdAt: new Date(), updatedAt: new Date() },
+    { name: 'Village C', commune_id: 2, createdAt: new Date(), updatedAt: new Date() },
+    { name: 'Village D', commune_id: 5, createdAt: new Date(), updatedAt: new Date() },
+    { name: 'Village E', commune_id: 3, createdAt: new Date(), updatedAt: new Date() }
+  ]);
+
 }
 export async function down(queryInterface, Sequelize) {
   /**

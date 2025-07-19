@@ -58,6 +58,9 @@ export default function ShopContextProvider({ children }) {
       localStorage.setItem('cart', JSON.stringify(updatedItems));
       return updatedItems;
     });
+    toast(`${quantity} item(s) added to cart`, {
+      description: <span className="text-gray-500">You have added {quantity} item(s) to your cart.</span>,
+    });
   };
 
   const getCartCount = () => {
@@ -90,6 +93,25 @@ export default function ShopContextProvider({ children }) {
     });
   }
 
+  const [cartData, setCartData] = useState([]);
+  const totalPrice = cartData.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+  useEffect(() => {
+    if (!books || !cartItems) return;
+  
+    const items = Object.entries(cartItems).map(([bookId, quantity]) => {
+      const book = books.find((b) => b?.id?.toString() === bookId.toString());
+      if (!book) return null;
+  
+      return {
+        ...book,
+        quantity,
+      };
+    }).filter(Boolean);
+  
+    setCartData(items);
+  }, [cartItems, books]);
+
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('cart')) || {};
     setCartItems(stored)
@@ -116,8 +138,11 @@ export default function ShopContextProvider({ children }) {
     setIsLoading,
     categories,
     cartItems,
+    setCartItems,
     updateQuantity,
-    removeFromCart
+    removeFromCart,
+    totalPrice,
+    cartData
   };
 
   return (

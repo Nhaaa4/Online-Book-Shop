@@ -11,13 +11,13 @@ export async function up(queryInterface, Sequelize) {
    *   isBetaMember: false
    * }], {});
   */
+
   await queryInterface.bulkInsert('Provinces', [
-    {
-      name: 'Kandal',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ])
+    { name: 'Province A', createdAt: new Date(), updatedAt: new Date() },
+    { name: 'Province B', createdAt: new Date(), updatedAt: new Date() },
+    { name: 'Province C', createdAt: new Date(), updatedAt: new Date() }
+  ]);
+ 
 }
 export async function down(queryInterface, Sequelize) {
   /**

@@ -66,30 +66,38 @@ export async function register(req, res) {
     }
 }
 
-export async function getProfileUser(req, res) {
-    const userId = req.user.user_id;
+// controllers/userController.js
 
-    try {
-        const user = await User.findByPk(userId, {
-            attributes: { exclude: ['password', 'updatedAt'] }
-        });
+export const getUserData = async (req, res) => {
+  try {
+    const userId = req.user.id
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        const orderStats = await Order.findOne({
-            where: { user_id: userId },
-            attributes: [
-                [fn('COUNT', col('id')), 'total_orders'],
-                [fn('SUM', col('total_amount')), 'total_spent']
-            ], 
-            raw: true
-        })
-
-        res.status(200).json({ success: true, data: user });
-    } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-        res.status(500).json({ success: false, message: "Failed to fetch user profile" });
+    const user = await User.findByPk(userId)
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" })
     }
+
+    const totalOrders = await Order.count({ where: { user_id: userId } })
+
+    const totalSpentResult = await Order.findAll({
+      where: { user_id: userId },
+      attributes: [[fn("SUM", col("total_amount")), "totalSpent"]],
+      raw: true,
+    })
+
+    const totalSpent = parseFloat(totalSpentResult[0]?.totalSpent || 0)
+
+    const userData = {
+      fullName: `${user.first_name} ${user.last_name}`,
+      email: user.email,
+      joinDate: user.createdAt,
+      totalOrders,
+      totalSpent,
+    }
+    res.json({ success: true, data: userData })
+  } catch (error) {
+    console.error("Failed to fetch user data:", error)
+    res.status(500).json({ success: false, message: "Failed to fetch user data", error: error.message })
+  }
 }

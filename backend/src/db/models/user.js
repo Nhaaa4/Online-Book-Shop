@@ -13,7 +13,6 @@ export default (sequelize, DataTypes) => {
       User.belongsTo(models.Village, { foreignKey: 'village_id' });
       User.hasMany(models.Review, { foreignKey: 'user_id' });
       User.hasMany(models.Order, { foreignKey: 'user_id' });
-      User.hasMany(models.Payment, { foreignKey: 'user_id' });
     }
   }
   User.init({

@@ -17,7 +17,7 @@ export default function Authentication() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [currentState, setCurrentState] = useState("register"); 
+  const [currentState, setCurrentState] = useState("login"); 
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",

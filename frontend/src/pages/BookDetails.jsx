@@ -11,12 +11,31 @@ import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { useShopContext } from "@/hooks/UseShopContext";
+import axios from "axios";
 
 export default function BookDetails() {
   const { id } = useParams();
   const [book, setBook] = useState({});
   const [quantity, setQuantity] = useState(1)
-  const { addToCart } = useShopContext();
+  const { addToCart, backendUrl, token, setIsLoading } = useShopContext();
+  const [userRating, setUserRating] = useState(0);
+  const [userReview, setUserReview] = useState("");
+  const [reviews, setReviews] = useState([]);
+
+  const defaultDistribution = [5, 4, 3, 2, 1].map(rating => ({
+    rating,
+    total: 0,
+    percentage: 0
+  }));
+
+  const apiDistribution = book?.ratingDistribution || [];
+
+  const mergedDistribution = defaultDistribution.map(defaultItem => {
+    const match = apiDistribution.find(item => item.rating === defaultItem.rating);
+    return match ? match : defaultItem;
+  });
+
+
 
   const handleQuantityChange = (change) => {
     setQuantity((prev) => Math.max(1, prev + change))
@@ -35,9 +54,49 @@ export default function BookDetails() {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(backendUrl + `/api/reviews/${id}`);
+      if (response.data.success) {
+        setReviews(response.data.data);
+      } else {
+        toast(response.data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
+      toast(err.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchBook();
+    fetchReviews();
   }, [id]);
+
+  const handleSubmitReview = async () => {
+    try {
+    const response = await axios.post(backendUrl + `/api/reviews`, {
+      bookId: id,
+      rating: userRating,
+      comment: userReview
+    }, { headers: { token } })
+
+    if (response.data.success) {
+      toast("Review submitted successfully!");
+      setUserRating(0);
+      setUserReview("");
+      fetchReviews();
+      fetchBook();  
+    } 
+  } catch (err) {
+    console.error(err)
+    toast(err.response.data.message)
+  }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-2">
@@ -185,23 +244,23 @@ export default function BookDetails() {
                 </div>
                 <p className="text-gray-600">{book.totalReviews} reviews</p>
               </div>
-              {/* <div className="space-y-2">
-                {ratingDistribution.map((item) => (
-                  <div key={item.stars} className="flex items-center space-x-2">
-                    <span className="text-sm w-8">{item.stars}★</span>
-                    <Progress value={item.percentage} className="flex-1 h-2" />
+              <div className="space-y-2">
+                {mergedDistribution.map((item) => (
+                  <div key={item.rating} className="flex items-center space-x-2">
+                    <span className="text-sm w-8">{item.rating}★</span>
+                    <Progress value={parseInt(item.percentage)} className="flex-1 h-2" />
                     <span className="text-sm text-gray-600 w-8">
-                      {item.count}
+                      {item.total}
                     </span>
                   </div>
                 ))}
-              </div> */}
+              </div>
             </div>
 
             <Separator />
 
             {/* Write Review */}
-            {/* <div className="space-y-4">
+            <div className="space-y-4">
               <h4 className="font-semibold text-gray-800">Write a Review</h4>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600">Your Rating:</span>
@@ -219,33 +278,33 @@ export default function BookDetails() {
               </div>
               <Textarea
                 placeholder="Share your thoughts about this book..."
-                value={newReview}
-                onChange={(e) => setNewReview(e.target.value)}
+                value={userReview}
+                onChange={(e) => setUserReview(e.target.value)}
                 className="border-pink-200 focus:border-pink-400"
               />
               <Button
                 onClick={handleSubmitReview}
                 className="bg-pink-500 hover:bg-pink-600 text-white"
-                disabled={!newReview.trim() || userRating === 0}
+                disabled={!userReview.trim() || userRating === 0}
               >
                 Submit Review
               </Button>
-            </div> */}
+            </div>
 
             <Separator />
 
             {/* Reviews List */}
-            {/* <div className="space-y-6">
+            <div className="space-y-6">
               {reviews.map((review) => (
                 <div key={review.id} className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Avatar>
-                      <AvatarImage src={review.avatar || "/placeholder.svg"} />
-                      <AvatarFallback>{review.user.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={review.avatar || "/avatar.svg"} />
+                      <AvatarFallback>{review.User.first_name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="font-medium text-gray-800">
-                        {review.user}
+                        {review.User.first_name} {review.User.last_name}
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="flex">
@@ -261,7 +320,7 @@ export default function BookDetails() {
                           ))}
                         </div>
                         <span className="text-sm text-gray-600">
-                          {review.date}
+                          {review.createdAt.split("T")[0]}
                         </span>
                       </div>
                     </div>
@@ -269,7 +328,7 @@ export default function BookDetails() {
                   <p className="text-gray-700 ml-12">{review.comment}</p>
                 </div>
               ))}
-            </div> */}
+            </div>
           </CardContent>
         </Card>
       </div>

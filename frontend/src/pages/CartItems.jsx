@@ -2,55 +2,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useShopContext } from "@/hooks/UseShopContext";
-import axios from "axios";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
-import { use, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function CartItems() {
-  const { cartItems, updateQuantity, removeFromCart, navigate, books, isLoading, setIsLoading, backendUrl } = useShopContext();
-  const [cartData, setCartData] = useState([]);
-  const totalPrice = cartData.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const [shipping, setShipping] = useState(0);
-
-  const getShoppingMethod = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(backendUrl + "/api/orders/shipping-methods");
-      const data = response.data;
-      setShipping(data);
-      console.log("Shipping Method:", data.data);
-    } catch (error) {
-      console.error("Error fetching shipping method:", error);
-      toast(error.response?.data?.message || "Failed to fetch shipping method");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getShoppingMethod();
-  }, []);
-
-  useEffect(() => {
-    if (!books || !cartItems) return;
+  const { updateQuantity, removeFromCart, navigate, token, cartData, totalPrice } = useShopContext();
   
-    const items = Object.entries(cartItems).map(([bookId, quantity]) => {
-      const book = books.find((b) => b?.id?.toString() === bookId.toString());
-      if (!book) return null;
-  
-      return {
-        ...book,
-        quantity,
-      };
-    }).filter(Boolean);
-  
-    setCartData(items);
-  }, [cartItems, books]);
 
   const proceedToCheckout = () => {
-    navigate('/place-order')
+    if (token) {
+      navigate('/place-order')
+    } else {
+      toast('Please log in to proceed with checkout.', {
+        description: <span className="text-gray-500">You need to be logged in to place an order.</span>,
+      });
+    }
   }
 
   if (cartData.length === 0) {
@@ -143,7 +110,10 @@ export default function CartItems() {
                     <span className="text-gray-600">Subtotal</span>
                     <span className="font-medium">${totalPrice}</span>
                   </div>
-                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shpping Fee</span>
+                    <span className="font-medium">Free</span>
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tax</span>
                     <span className="font-medium">Free</span>
@@ -163,7 +133,7 @@ export default function CartItems() {
                   Proceed to Checkout
                 </Button>
 
-                <Link to="/" className="block">
+                <Link to="/books" className="block">
                   <Button variant="outline" className="w-full border-pink-200 hover:bg-pink-50 bg-transparent">
                     Continue Shopping
                   </Button>

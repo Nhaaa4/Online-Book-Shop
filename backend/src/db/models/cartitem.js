@@ -13,11 +13,26 @@ export default (sequelize, DataTypes) => {
       CartItem.belongsTo(models.Book, { foreignKey: 'book_id' });
     }
   }
-  CartItem.init({
-    quantity: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'CartItem',
-  });
+  CartItem.init(
+    {
+      order_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      },
+      book_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'CartItem',
+      id: false,
+    }
+  );
   return CartItem;
 };

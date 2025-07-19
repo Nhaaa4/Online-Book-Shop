@@ -19,16 +19,16 @@ export default function Footer() {
               adventure since 2020.
             </p>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="icon" className="hover:bg-pink-500/20 hover:text-pink-400">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-900 hover:text-pink-400">
                 <Facebook className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-pink-500/20 hover:text-pink-400">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-900 hover:text-pink-400">
                 <Twitter className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-pink-500/20 hover:text-pink-400">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-900 hover:text-pink-400">
                 <Instagram className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-pink-500/20 hover:text-pink-400">
+              <Button variant="ghost" size="icon" className="hover:bg-gray-900 hover:text-pink-400">
                 <Youtube className="h-5 w-5" />
               </Button>
             </div>
@@ -38,20 +38,20 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-pink-400">Quick Links</h3>
             <div className="space-y-2">
-              <Link href="/books" className="block text-gray-300 hover:text-pink-400 transition-colors">
+              <Link to="/" className="block text-gray-300 hover:text-pink-400 transition-colors">
+                Home
+              </Link>
+              <Link to="/books" className="block text-gray-300 hover:text-pink-400 transition-colors">
                 Browse Books
               </Link>
-              <Link href="/bestsellers" className="block text-gray-300 hover:text-pink-400 transition-colors">
-                Bestsellers
+              <Link to="/about" className="block text-gray-300 hover:text-pink-400 transition-colors">
+                About Us
               </Link>
-              <Link href="/new-releases" className="block text-gray-300 hover:text-pink-400 transition-colors">
-                New Releases
+              <Link to="/contact" className="block text-gray-300 hover:text-pink-400 transition-colors">
+                Contact Us
               </Link>
-              <Link href="/categories" className="block text-gray-300 hover:text-pink-400 transition-colors">
-                Categories
-              </Link>
-              <Link href="/deals" className="block text-gray-300 hover:text-pink-400 transition-colors">
-                Special Deals
+              <Link to="/profile" className="block text-gray-300 hover:text-pink-400 transition-colors">
+                My Profile
               </Link>
             </div>
           </div>
@@ -60,19 +60,19 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-pink-400">Customer Service</h3>
             <div className="space-y-2">
-              <Link href="/help" className="block text-gray-300 hover:text-pink-400 transition-colors">
+              <Link to="/help" className="block text-gray-300 hover:text-pink-400 transition-colors">
                 Help Center
               </Link>
-              <Link href="/contact" className="block text-gray-300 hover:text-pink-400 transition-colors">
+              <Link to="/contact" className="block text-gray-300 hover:text-pink-400 transition-colors">
                 Contact Us
               </Link>
-              <Link href="/shipping" className="block text-gray-300 hover:text-pink-400 transition-colors">
+              <Link to="/shipping" className="block text-gray-300 hover:text-pink-400 transition-colors">
                 Shipping Info
               </Link>
-              <Link href="/returns" className="block text-gray-300 hover:text-pink-400 transition-colors">
+              <Link to="/returns" className="block text-gray-300 hover:text-pink-400 transition-colors">
                 Returns & Exchanges
               </Link>
-              <Link href="/faq" className="block text-gray-300 hover:text-pink-400 transition-colors">
+              <Link to="/faq" className="block text-gray-300 hover:text-pink-400 transition-colors">
                 FAQ
               </Link>
             </div>
@@ -88,7 +88,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <Phone className="h-4 w-4 text-pink-400" />
-                <span className="text-sm">1-800-BOOKSHOP</span>
+                <span className="text-sm">855-123-BOOKSHOP</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <MapPin className="h-4 w-4 text-pink-400" />
@@ -114,7 +114,7 @@ export default function Footer() {
 
         {/* Bottom section */}
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div className="text-sm text-gray-400">© 2024 BookShop. All rights reserved.</div>
+          <div className="text-sm text-gray-400">&copy; {new Date().getFullYear()} BookShop. All rights reserved.</div>
           <div className="flex space-x-6 text-sm">
             <Link href="/privacy" className="text-gray-400 hover:text-pink-400 transition-colors">
               Privacy Policy
