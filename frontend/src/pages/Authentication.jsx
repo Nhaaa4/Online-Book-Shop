@@ -49,7 +49,7 @@ export default function Authentication() {
             description: <span className="text-gray-500">Welcome back to BookShop!</span>,
           });
           setToken(success.data.token);
-          localStorage.setItem("token", success.data.token);
+          localStorage.setItem("bookshop_user", success.data.token);
           navigate('/')
         } 
       } catch (error) {
@@ -82,7 +82,7 @@ export default function Authentication() {
             description: <span className="text-gray-500">Welcome to BookShop!</span>,
           });
           setToken(response.data.token);
-          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("bookshop_user", response.data.token);
           navigate('/');
         }
       } catch (error) {

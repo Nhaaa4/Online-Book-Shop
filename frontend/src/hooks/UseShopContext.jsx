@@ -121,8 +121,8 @@ export default function ShopContextProvider({ children }) {
   }, [setCartItems]);
 
   useEffect(() => {
-    if (!token && localStorage.getItem('token')) {
-      setToken(localStorage.getItem('token'));
+    if (!token && localStorage.getItem('bookshop_user')) {
+      setToken(localStorage.getItem('bookshop_user'));
     }
   }, [token]);
 

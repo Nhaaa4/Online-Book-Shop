@@ -8,14 +8,13 @@ import { useShopContext } from "@/hooks/UseShopContext"
 import { useState } from "react"
 
 export default function Navigation() {
-  const [searchTerm, setSearchTerm] = useState("")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = useLocation().pathname
   const { token, setToken, navigate, getCartCount } = useShopContext()
 
   const totalItems = getCartCount()
   const logout = () => {
-    localStorage.removeItem("token")
+    localStorage.removeItem("bookshop_user")
     setToken('')
     navigate("/authentication")
     toast("Logged out successfully", {
