@@ -7,7 +7,7 @@ This project is a full stack web application designed for a bookshop. It provide
 |--------------|-------------------------------|
 | Frontend     | React.js + Tailwind CSS       |
 | Backend      | Node.js + Express.js          |
-| Database     | PostgreSQL with Sequelize ORM |
+| Database     | PostgreSQL with Sequelize-CLI (ORM) |
 | Auth         | JWT-based authentication      |
 
 ## III. Installation
