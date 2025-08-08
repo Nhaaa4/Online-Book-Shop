@@ -1,5 +1,5 @@
-import { getBookById } from "@/service/api";
-import { useEffect, useState } from "react";
+import { booksAPI, reviewsAPI } from "@/service/api";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Star, ShoppingCart, Heart, Share2, Plus, Minus } from "lucide-react"
@@ -11,13 +11,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { useShopContext } from "@/hooks/UseShopContext";
-import axios from "axios";
 
 export default function BookDetails() {
   const { id } = useParams();
   const [book, setBook] = useState({});
   const [quantity, setQuantity] = useState(1)
-  const { addToCart, backendUrl, token, setIsLoading } = useShopContext();
+  const { addToCart, setIsLoading } = useShopContext();
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState("");
   const [reviews, setReviews] = useState([]);
@@ -41,23 +40,23 @@ export default function BookDetails() {
     setQuantity((prev) => Math.max(1, prev + change))
   }
 
-  const fetchBook = async () => {
+  const fetchBook = useCallback(async () => {
     try {
-      const response = await getBookById(id);
+      const response = await booksAPI.getById(id);
       if (!response.success) {
         toast(response.message);
       }
-      setBook(response.data);
+      setBook(response.data.data);
     } catch (err) {
       console.error("Error fetching book details:", err);
       toast(err.response.data.message);
     }
-  };
+  }, [id]);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(backendUrl + `/api/reviews/${id}`);
+      const response = await reviewsAPI.getByBookId(id);
       if (response.data.success) {
         setReviews(response.data.data);
       } else {
@@ -65,24 +64,24 @@ export default function BookDetails() {
       }
     } catch (err) {
       console.error("Error fetching reviews:", err);
-      toast(err.response.data.message);
+      // Error already handled by API interceptor
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id, setIsLoading]);
 
   useEffect(() => {
     fetchBook();
     fetchReviews();
-  }, [id]);
+  }, [id, fetchBook, fetchReviews]);
 
   const handleSubmitReview = async () => {
     try {
-    const response = await axios.post(backendUrl + `/api/reviews`, {
+    const response = await reviewsAPI.create({
       bookId: id,
       rating: userRating,
       comment: userReview
-    }, { headers: { token } })
+    })
 
     if (response.data.success) {
       toast("Review submitted successfully!");

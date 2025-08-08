@@ -3,18 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { useShopContext } from "@/hooks/UseShopContext";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { ordersAPI } from '../service/api';
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 export default function OrderHistory() {
-  const { token, backendUrl } = useShopContext();
+  const { token } = useShopContext();
   const [orderHistory, setOrderHistory] = useState([]);
 
   const fetchOrderHistory = async () => {
     try {
-      const respone = await axios.get(backendUrl + '/api/orders/history', { headers: { token } });
-      setOrderHistory(respone.data.data);
+      const response = await ordersAPI.getHistory();
+      setOrderHistory(response.data.data);
     } catch (error) {
       console.error("Error fetching order history:", error);
     }

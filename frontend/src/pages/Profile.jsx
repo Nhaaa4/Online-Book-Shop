@@ -5,13 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useShopContext } from "@/hooks/UseShopContext";
-import axios from "axios";
+import { authAPI } from '../service/api';
 import { MessageSquare, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export default function Profile() {
-  const { token, backendUrl } = useShopContext()
+  const { token } = useShopContext()
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "orders"; // default tab
@@ -23,7 +23,7 @@ export default function Profile() {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(backendUrl + '/api/users/profile', { headers: { token } });
+      const response = await authAPI.getProfile();
       setUserData(response.data.data);
     } catch (error) {
       console.error('Error fetching user profile:', error);

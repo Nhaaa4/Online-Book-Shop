@@ -1,5 +1,5 @@
 import { useShopContext } from "@/hooks/UseShopContext";
-import axios from "axios";
+import { reviewsAPI } from '../service/api';
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FileText, MessageSquare, Star } from "lucide-react";
@@ -7,12 +7,12 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 export default function MyReview() {
-  const { token, backendUrl } = useShopContext();
+  const { token } = useShopContext();
   const [userReviews, setUserReviews] = useState([]);
 
   const fetchUserReviews = async () => {
     try {
-      const response = await axios.get(backendUrl + "/api/reviews/my-reviews", { headers: { token } });
+      const response = await reviewsAPI.getMyReviews();
       setUserReviews(response.data.data);
       console.log("User reviews fetched:", response.data.data);
     } catch (error) {

@@ -6,6 +6,17 @@ const { Order, CartItem, Book, User, Author } = db
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const currency = "usd";
 
+export async function getNumberOfOrders(req, res) {
+  try {
+    const count = await Order.count();
+
+    res.json({ success: true, data: count });
+  } catch (error) {
+    console.error("Get Number of Orders error:", error.message);
+    res.status(500).json({ success: false, message: 'Server error: Get Number of Orders' });
+  }
+}
+
 export async function placeOrder(req, res) {
   const { items, totalAmount, village_id } = req.body;
   const userId = req.user.id; 
@@ -228,5 +239,167 @@ export const getOrderHistory = async (req, res) => {
   } catch (error) {
     console.error("Failed to fetch order history:", error)
     res.status(500).json({ success: false, message: "Failed to fetch order history", error: error.message })
+  }
+}
+
+// Get all orders (admin)
+export async function getAllOrders(req, res) {
+  try {
+    const orders = await Order.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'first_name', 'last_name', 'email']
+        },
+        {
+          model: CartItem,
+          include: [
+            {
+              model: Book,
+              attributes: ['title', 'price'],
+              include: [
+                {
+                  model: Author,
+                  attributes: ['first_name', 'last_name']
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+
+    const formattedOrders = orders.map(order => ({
+      id: order.id,
+      user: {
+        id: order.User.id,
+        name: `${order.User.first_name} ${order.User.last_name}`,
+        email: order.User.email
+      },
+      date: order.createdAt,
+      status: order.order_status,
+      total: order.total_amount,
+      paymentStatus: order.payment_status,
+      paymentMethod: order.payment_method,
+      items: order.CartItems.map(item => ({
+        title: item.Book.title,
+        author: `${item.Book.Author.first_name} ${item.Book.Author.last_name}`,
+        price: item.Book.price,
+        quantity: item.quantity,
+      }))
+    }));
+
+    res.status(200).json({ success: true, data: formattedOrders });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch orders', error: error.message });
+  }
+}
+
+// Get order by ID (admin)
+export async function getOrderById(req, res) {
+  try {
+    const { id } = req.params;
+    
+    const order = await Order.findByPk(id, {
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'first_name', 'last_name', 'email']
+        },
+        {
+          model: CartItem,
+          include: [
+            {
+              model: Book,
+              attributes: ['title', 'price'],
+              include: [
+                {
+                  model: Author,
+                  attributes: ['first_name', 'last_name']
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    const formattedOrder = {
+      id: order.id,
+      user: {
+        id: order.User.id,
+        name: `${order.User.first_name} ${order.User.last_name}`,
+        email: order.User.email
+      },
+      date: order.createdAt,
+      status: order.order_status,
+      total: order.total_amount,
+      paymentStatus: order.payment_status,
+      paymentMethod: order.payment_method,
+      items: order.CartItems.map(item => ({
+        title: item.Book.title,
+        author: `${item.Book.Author.first_name} ${item.Book.Author.last_name}`,
+        price: item.Book.price,
+        quantity: item.quantity,
+      }))
+    };
+
+    res.status(200).json({ success: true, data: formattedOrder });
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch order', error: error.message });
+  }
+}
+
+// Update order status (admin)
+export async function updateOrderStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ success: false, message: 'Status is required' });
+    }
+
+    const order = await Order.findByPk(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    await order.update({ order_status: status });
+
+    res.status(200).json({ success: true, message: 'Order status updated successfully' });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ success: false, message: 'Failed to update order status', error: error.message });
+  }
+}
+
+// Delete order (admin)
+export async function deleteOrder(req, res) {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findByPk(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Delete associated cart items first
+    await CartItem.destroy({ where: { order_id: id } });
+    
+    // Delete the order
+    await order.destroy();
+
+    res.status(200).json({ success: true, message: 'Order deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete order', error: error.message });
   }
 }

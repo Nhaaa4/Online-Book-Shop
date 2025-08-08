@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useShopContext } from "@/hooks/UseShopContext";
+import { authAPI } from '../service/api';
 
 export default function Authentication() {
-  const { token, setToken, backendUrl, navigate } = useShopContext();
+  const { token, setToken, navigate } = useShopContext();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -39,24 +39,19 @@ export default function Authentication() {
     if (currentState == "login") {
       try {
         setIsLoading(true);
-        const success = await axios.post(
-          backendUrl + "/api/users/login",
-          { email, password }
-        );
+        const response = await authAPI.login({ email, password });
 
-        if (success) {
+        if (response) {
           toast("Login successful", {
             description: <span className="text-gray-500">Welcome back to BookShop!</span>,
           });
-          setToken(success.data.token);
-          localStorage.setItem("bookshop_user", success.data.token);
+          setToken(response.data.token);
+          localStorage.setItem("bookshop_user", response.data.token);
           navigate('/')
         } 
       } catch (error) {
         console.error("Login error:", error);
-        toast("Login failed", {
-          description: <span className="text-gray-500">{error.response?.data?.message}</span> || <span className="text-gray-500">An error occurred during login.</span>,
-        });
+        // Error message already shown by API interceptor
       } finally {
         setIsLoading(false);
       }
@@ -69,7 +64,7 @@ export default function Authentication() {
       }
       try {
         setIsLoading(true);
-        const response = await axios.post(backendUrl + "/api/users/register", {
+        const response = await authAPI.register({
           first_name: formData.firstName,
           last_name: formData.lastName,
           email: formData.email,

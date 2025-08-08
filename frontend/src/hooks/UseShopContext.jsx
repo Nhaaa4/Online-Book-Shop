@@ -1,13 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import axios from 'axios';
 import { createContext, useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { booksAPI } from '../service/api';
 
 const ShopContext = createContext()
 
 export default function ShopContextProvider({ children }) {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL  
   const navigate = useNavigate()
   const [token, setToken] = useState(null);
   const [cartItems, setCartItems] = useState({})
@@ -18,11 +17,11 @@ export default function ShopContextProvider({ children }) {
   const getBooks = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(backendUrl + `/api/books`)
+      const response = await booksAPI.getAll()
       setBooks(response.data.data)
     } catch (err) {
       console.error(err)
-      toast(err.response.data.message)
+      // Error handling is already done in API interceptor
     } finally {
       setIsLoading(false)
     }
@@ -31,11 +30,11 @@ export default function ShopContextProvider({ children }) {
   const getCategories = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(backendUrl + `/api/books/categories`)
+      const response = await booksAPI.getCategories()
       setCategories(response.data.data)
     } catch (err) {
       console.error(err)
-      toast(err.response.data.message)
+      // Error handling is already done in API interceptor
     } finally {
       setIsLoading(false)
     }
@@ -129,7 +128,6 @@ export default function ShopContextProvider({ children }) {
   const values = {
     token,
     setToken,
-    backendUrl,
     navigate,
     addToCart,
     getCartCount,

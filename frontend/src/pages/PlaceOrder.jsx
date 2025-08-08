@@ -5,13 +5,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { useShopContext } from "@/hooks/UseShopContext";
 import { Label } from "@radix-ui/react-label";
-import axios from "axios";
+import { addressAPI, ordersAPI } from '../service/api';
 import { CreditCard, Shield, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function PlaceOrder() {
-  const { navigate, isLoading, setIsLoading, backendUrl, token, totalPrice, cartItems, setCartItems } = useShopContext();
+  const { navigate, isLoading, setIsLoading, token, totalPrice, cartItems, setCartItems } = useShopContext();
   const [method, setMethod] = useState('stripe');
   const [shippingInfo, setShippingInfo] = useState({
     firstName: '',
@@ -38,7 +38,7 @@ export default function PlaceOrder() {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get(backendUrl + '/api/address/provinces');
+        const response = await addressAPI.getProvinces();
         setProvinces(response.data.data);
       } catch (error) {
         console.error('Error fetching provinces:', error);
@@ -51,7 +51,7 @@ export default function PlaceOrder() {
   const onProvinceChange = async (value) => {
     const provinceId = value
     setSelected(prev => ({ ...prev, provinceId, districtId: "", communeId: "", villageId: "" }))
-    const res = await axios.get(backendUrl + `/api/address/districts?province_id=${provinceId}`)
+    const res = await addressAPI.getDistricts(provinceId)
     setDistricts(res.data.data)
     setCommunes([])
     setVillages([])
@@ -59,14 +59,14 @@ export default function PlaceOrder() {
 
   const onDistrictChange = async (value) => {
     setSelected((prev) => ({ ...prev, districtId: value, communeId: "", villageId: "" }))
-    const res = await axios.get(backendUrl + `/api/address/communes?district_id=${value}`)
+    const res = await addressAPI.getCommunes(value)
     setCommunes(res.data.data)
     setVillages([])
   }
 
   const onCommuneChange = async (value) => {
     setSelected((prev) => ({ ...prev, communeId: value, villageId: "" }))
-    const res = await axios.get(backendUrl + `/api/address/villages?commune_id=${value}`)
+    const res = await addressAPI.getVillages(value)
     setVillages(res.data.data)
   }
 
@@ -77,7 +77,7 @@ export default function PlaceOrder() {
   const fetchUserInfo = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(backendUrl + '/api/address/user', { headers: { token } });
+      const response = await addressAPI.getUserAddress();
       setShippingInfo({
         firstName: response.data.data.first_name || '',
         lastName: response.data.data.last_name || '',
@@ -117,12 +117,13 @@ export default function PlaceOrder() {
       setIsLoading(true);
       switch (method) {
         case 'cod': {
-          const response = await axios.post(backendUrl + '/api/orders/place-order', {items: cartItems, totalAmount: totalPrice, village_id: selected.villageId}, { headers: { token } });
+          const response = await ordersAPI.placeOrder({items: cartItems, totalAmount: totalPrice, village_id: selected.villageId});
           if (response.data.success) {
             toast('Order placed successfully!', {
               description: <span className="text-gray-500">Your order has been placed successfully.</span>,
             });
             setCartItems({});
+            localStorage.removeItem('cart');
             navigate('/profile?tab=orders');
           } else {
             toast('Failed to place order. Please try again.');
@@ -130,7 +131,7 @@ export default function PlaceOrder() {
         break;
         }
         case 'stripe': {
-          const response = await axios.post(backendUrl + '/api/orders/place-order-stripe', {items: cartItems, totalAmount: totalPrice, village_id: selected.villageId}, { headers: { token } });
+          const response = await ordersAPI.placeOrderStripe({items: cartItems, totalAmount: totalPrice, village_id: selected.villageId});
           if (response.data.success) {
             const { session_url } = response.data
             window.location.replace(session_url)
