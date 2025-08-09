@@ -18,12 +18,6 @@ export default function Home() {
           ordersAPI.getCount(),
         ]);
         
-        console.log('API Responses:', {
-          customers: numberOfCustomers.data,
-          books: numberOfBooks.data,
-          orders: numberOfOrders.data,
-        });
-        
         // Handle different response formats from backend
         setNumCustomers(numberOfCustomers.data.data?.count || 0);
         setNumBooks(numberOfBooks.data.data || 0);

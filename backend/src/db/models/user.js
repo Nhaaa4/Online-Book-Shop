@@ -21,6 +21,20 @@ export default (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     phone_number: DataTypes.STRING,
+    village_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Villages',
+        key: 'id',
+      },
+    },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+      comment: 'URL to user profile image stored in Cloudinary'
+    }
   }, {
     sequelize,
     modelName: 'User',

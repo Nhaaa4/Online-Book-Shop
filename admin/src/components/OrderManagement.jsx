@@ -24,7 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Edit, Loader2, Package } from "lucide-react";
+import { Edit, Loader2, Package, CheckCircle, Truck, Clock, AlertCircle, XCircle } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
@@ -46,7 +46,52 @@ export default function OrderManagement() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newStatus, setNewStatus] = useState("pending");
 
-  const orderStatuses = ["pending", "shipped"];
+  // Enhanced order statuses with more options
+  const orderStatuses = [
+    { value: "pending", label: "Pending" },
+    { value: "processing", label: "Processing" },
+    { value: "shipped", label: "Shipped" },
+    { value: "delivered", label: "Delivered" },
+    { value: "cancelled", label: "Cancelled" }
+  ];
+
+  // Status styling function for modern appearance with icons
+  const getStatusStyle = (status) => {
+    const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide transition-all duration-200 hover:scale-105 shadow-sm flex items-center gap-1 w-fit";
+    
+    switch (status?.toLowerCase()) {
+      case "delivered":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-green-500 to-green-600 text-white shadow-green-200`,
+          icon: <CheckCircle className="h-3 w-3" />
+        };
+      case "shipped":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200`,
+          icon: <Truck className="h-3 w-3" />
+        };
+      case "processing":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-yellow-200`,
+          icon: <Clock className="h-3 w-3" />
+        };
+      case "pending":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-gray-200`,
+          icon: <AlertCircle className="h-3 w-3" />
+        };
+      case "cancelled":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-200`,
+          icon: <XCircle className="h-3 w-3" />
+        };
+      default:
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-pink-200`,
+          icon: <Package className="h-3 w-3" />
+        };
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -56,7 +101,7 @@ export default function OrderManagement() {
       setOrders(response.data.data);
       setNumOrder(numberOfOrders.data.data)
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching orders:', err);
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +128,7 @@ export default function OrderManagement() {
         setSelectedOrder(null);
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error updating order status:', err);
       toast.error(err.response?.data?.message || 'Error updating order status');
     } finally {
       setIsSubmitting(false);
@@ -162,15 +207,10 @@ export default function OrderManagement() {
                     <TableCell>{order.items?.length || 0} item(s)</TableCell>
                     <TableCell>${order.total}</TableCell>
                     <TableCell>
-                      <Badge
-                        className={
-                          order.status === "pending"
-                            ? "bg-blue-400"
-                            : "bg-green-500"
-                        }
-                      >
+                      <div className={getStatusStyle(order.status).className}>
+                        {getStatusStyle(order.status).icon}
                         {order.status}
-                      </Badge>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -212,13 +252,29 @@ export default function OrderManagement() {
                 </SelectTrigger>
                 <SelectContent>
                   {orderStatuses.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
+                    <SelectItem key={status.value} value={status.value}>
+                      <div className="flex items-center gap-2">
+                        {getStatusStyle(status.value).icon}
+                        {status.label}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* Status Preview */}
+            {newStatus && (
+              <div>
+                <Label>Status Preview</Label>
+                <div className="mt-2">
+                  <div className={getStatusStyle(newStatus).className}>
+                    {getStatusStyle(newStatus).icon}
+                    {newStatus}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button

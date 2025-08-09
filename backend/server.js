@@ -8,6 +8,7 @@ import roleRoute from "./src/routes/role.route.js"
 import logger from "./src/middleware/logger.js"
 import reviewRouter from "./src/routes/review.route.js"
 import addressRoute from "./src/routes/address.route.js"
+import { errorHandler, notFound } from "./src/middleware/errorHandler.js"
 
 const app = express()
 const port = process.env.PORT
@@ -28,6 +29,12 @@ app.use('/api/orders', orderRoute)
 app.use('/api/roles', roleRoute)
 app.use('/api/reviews', reviewRouter)
 app.use('/api/address', addressRoute)
+
+// 404 handler for undefined routes
+app.use(notFound);
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port} in ${process.env.NODE_ENV} mode`);

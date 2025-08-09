@@ -117,3 +117,74 @@ export async function getUserAddress(req, res) {
     res.status(500).json({ success: false, message: "Failed to get address" });
   }
 }
+
+export async function updateUserAddress(req, res) {
+  try {
+    const userId = req.user.id;
+    const { village_id } = req.body;
+
+    if (!village_id) {
+      return res.status(400).json({ success: false, message: "Village ID is required" });
+    }
+
+    // Verify that the village exists
+    const village = await Village.findByPk(village_id);
+    if (!village) {
+      return res.status(404).json({ success: false, message: "Village not found" });
+    }
+
+    // Update user's village_id
+    await User.update(
+      { village_id },
+      { where: { id: userId } }
+    );
+
+    // Get updated address information
+    const updatedAddress = await User.findByPk(userId, {
+      attributes: [
+        'first_name',
+        'last_name',
+        'email',
+        'phone_number',
+        [col('Village.name'), 'village'],
+        [col('Village.Commune.name'), 'commune'],
+        [col('Village.Commune.District.name'), 'district'],
+        [col('Village.Commune.District.Province.name'), 'province']
+      ],
+      include: [
+        {
+          model: Village,
+          attributes: [],
+          include: [
+            {
+              model: Commune,
+              attributes: [],
+              include: [
+                {
+                  model: District,
+                  attributes: [],
+                  include: [
+                    {
+                      model: Province,
+                      attributes: []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      raw: true
+    });
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Address updated successfully",
+      data: updatedAddress 
+    });
+  } catch (error) {
+    console.error("Failed to update address:", error);
+    res.status(500).json({ success: false, message: "Failed to update address" });
+  }
+}

@@ -1,4 +1,4 @@
-import { Package, ShoppingBag } from "lucide-react";
+import { Package, ShoppingBag, CheckCircle, Truck, Clock, AlertCircle, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { useShopContext } from "@/hooks/UseShopContext";
@@ -10,6 +10,44 @@ import { Button } from "./ui/button";
 export default function OrderHistory() {
   const { token } = useShopContext();
   const [orderHistory, setOrderHistory] = useState([]);
+
+  // Status styling function for modern appearance with icons
+  const getStatusStyle = (status) => {
+    const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide transition-all duration-200 hover:scale-105 shadow-sm flex items-center gap-1";
+    
+    switch (status?.toLowerCase()) {
+      case "delivered":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-green-500 to-green-600 text-white shadow-green-200`,
+          icon: <CheckCircle className="h-3 w-3" />
+        };
+      case "shipped":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200`,
+          icon: <Truck className="h-3 w-3" />
+        };
+      case "processing":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-yellow-200`,
+          icon: <Clock className="h-3 w-3" />
+        };
+      case "pending":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-gray-200`,
+          icon: <AlertCircle className="h-3 w-3" />
+        };
+      case "cancelled":
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-200`,
+          icon: <XCircle className="h-3 w-3" />
+        };
+      default:
+        return {
+          className: `${baseClasses} bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-pink-200`,
+          icon: <Package className="h-3 w-3" />
+        };
+    }
+  };
 
   const fetchOrderHistory = async () => {
     try {
@@ -62,17 +100,10 @@ export default function OrderHistory() {
                   <p className="text-sm text-gray-600">{new Date(order.date).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
-                  <Badge
-                    className={
-                      order.status === "Delivered"
-                        ? "bg-green-100 text-green-700"
-                        : order.status === "Shipped"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }
-                  >
+                  <div className={getStatusStyle(order.status).className}>
+                    {getStatusStyle(order.status).icon}
                     {order.status}
-                  </Badge>
+                  </div>
                   <p className="text-xl font-bold text-pink-600 mt-2">
                     ${order?.total}
                   </p>

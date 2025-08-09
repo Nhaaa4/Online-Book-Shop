@@ -123,7 +123,7 @@ export default function PlaceOrder() {
               description: <span className="text-gray-500">Your order has been placed successfully.</span>,
             });
             setCartItems({});
-            localStorage.removeItem('cart');
+            localStorage.removeItem('bookshop_cart');
             navigate('/profile?tab=orders');
           } else {
             toast('Failed to place order. Please try again.');

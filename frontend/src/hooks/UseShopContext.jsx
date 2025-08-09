@@ -54,7 +54,7 @@ export default function ShopContextProvider({ children }) {
     }
     setCartItems((prevItems) => {
       const updatedItems = { ...prevItems, [bookId]: (prevItems[bookId] || 0) + quantity };
-      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      localStorage.setItem('bookshop_cart', JSON.stringify(updatedItems));
       return updatedItems;
     });
     toast(`${quantity} item(s) added to cart`, {
@@ -71,13 +71,13 @@ export default function ShopContextProvider({ children }) {
       setCartItems((prevItems) => {
         const updatedItems = { ...prevItems };
         delete updatedItems[bookId];
-        localStorage.setItem('cart', JSON.stringify(updatedItems));
+        localStorage.setItem('bookshop_cart', JSON.stringify(updatedItems));
         return updatedItems;
       });
     } else {
       setCartItems((prevItems) => {
         const updatedItems = { ...prevItems, [bookId]: quantity };
-        localStorage.setItem('cart', JSON.stringify(updatedItems));
+        localStorage.setItem('bookshop_cart', JSON.stringify(updatedItems));
         return updatedItems;
       });
     }
@@ -87,7 +87,7 @@ export default function ShopContextProvider({ children }) {
     setCartItems((prevItems) => {
       const updatedItems = { ...prevItems };
       delete updatedItems[bookId];
-      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      localStorage.setItem('bookshop_cart', JSON.stringify(updatedItems));
       return updatedItems;
     });
   }
@@ -112,7 +112,7 @@ export default function ShopContextProvider({ children }) {
   }, [cartItems, books]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('cart')) || {};
+    const stored = JSON.parse(localStorage.getItem('bookshop_cart')) || {};
     setCartItems(stored)
 
     getBooks();

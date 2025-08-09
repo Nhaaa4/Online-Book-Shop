@@ -19,7 +19,7 @@ export async function userReviewBook(req, res) {
     });
     return res.status(201).json({ success: true, message: "Review created successfully" });
   } catch (error) {
-    console.log(error);
+    console.error('Error creating review:', error);
     return res.status(500).json({ success: false, message: "Failed to create review" });
   }
 }
@@ -34,7 +34,7 @@ export async function getReviewsByBook(req, res) {
 
     const reviews = await Review.findAll({
       where: { book_id: bookId },
-      include: [{ model: db.User, attributes: ['first_name', 'last_name'] }],
+      include: [{ model: db.User, attributes: ['first_name', 'last_name', 'avatar'] }],
       order: [['createdAt', 'DESC']],
       limit: 3
     });

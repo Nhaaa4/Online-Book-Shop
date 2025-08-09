@@ -363,8 +363,18 @@ export async function updateOrderStatus(req, res) {
     const { id } = req.params;
     const { status } = req.body;
 
+    // Define allowed status values
+    const allowedStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+
     if (!status) {
       return res.status(400).json({ success: false, message: 'Status is required' });
+    }
+
+    if (!allowedStatuses.includes(status.toLowerCase())) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Invalid status. Allowed statuses: ${allowedStatuses.join(', ')}` 
+      });
     }
 
     const order = await Order.findByPk(id);
@@ -372,9 +382,13 @@ export async function updateOrderStatus(req, res) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    await order.update({ order_status: status });
+    await order.update({ order_status: status.toLowerCase() });
 
-    res.status(200).json({ success: true, message: 'Order status updated successfully' });
+    res.status(200).json({ 
+      success: true, 
+      message: `Order status updated to '${status}' successfully`,
+      data: { id: order.id, status: status.toLowerCase() }
+    });
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ success: false, message: 'Failed to update order status', error: error.message });

@@ -17,8 +17,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Plus, Edit, Eye, Trash2, Loader2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import SimpleImageUpload from "@/components/ui/react-image-uploading"
 import { booksAPI } from "@/lib/api"
 import { toast } from "react-toastify"
+import "@/components/ui/react-image-upload.css"
 
 export default function BookManagement() {
   const [books, setBooks] = useState([])
@@ -33,6 +35,7 @@ export default function BookManagement() {
     price: 0,
     stock_quantity: 0,
     image_url: "",
+    images: [],
     author_id: 0,
     category_id: 0,
     authorName: "",
@@ -45,8 +48,6 @@ export default function BookManagement() {
     try {
       setIsLoading(true)
       const response = await booksAPI.getAll()
-      console.log('API Response:', response.data.data);
-      console.log('First book:', response.data.data[0]);
       setBooks(response.data.data)
     } catch (err) {
       console.error('Error fetching books:', err);
@@ -84,6 +85,7 @@ export default function BookManagement() {
       price: 0,
       stock_quantity: 0,
       image_url: "",
+      images: [],
       author_id: 0,
       category_id: 0,
       authorName: "",
@@ -94,16 +96,33 @@ export default function BookManagement() {
   const handleAdd = async () => {
     try {
       setIsLoading(true)
-      
+
       // Validation
       if (!formData.title || !formData.isbn || !formData.author_id || !formData.category_id || !formData.price) {
         toast.error('Please fill in all required fields (Title, ISBN, Author, Category, Price)');
         return;
       }
+      
+      // Create FormData for multipart/form-data submission
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('isbn', formData.isbn);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('stock_quantity', formData.stock_quantity);
+      formDataToSend.append('author_id', formData.author_id);
+      formDataToSend.append('category_id', formData.category_id);
+      
+      // Add images array as JSON if present
+      if (formData.images && formData.images.length > 0) {
+        formDataToSend.append('images', JSON.stringify(formData.images));
+        // Set first image as primary image_url for backward compatibility
+        formDataToSend.append('image_url', formData.images[0]);
+      } else if (formData.image_url) {
+        formDataToSend.append('image_url', formData.image_url);
+      }
 
-      console.log('Creating book with data:', formData);
-      const response = await booksAPI.create(formData)
-      console.log('Create book response:', response);
+      const response = await booksAPI.create(formDataToSend);
       
       if (response.data.success) {
         toast.success(response.data.message)
@@ -122,18 +141,16 @@ export default function BookManagement() {
   }
 
   const handleEdit = (book) => {
-    console.log('=== EDIT DEBUG START ===');
-    console.log('Full book object:', JSON.stringify(book, null, 2));
-    console.log('Book title:', book.title);
-    console.log('Book description:', book.description);
-    console.log('Book Author object:', book.Author);
-    console.log('Book Category object:', book.Category);
-    console.log('Author ID:', book.Author?.id);
-    console.log('Category ID:', book.Category?.id);
-    console.log('Available authors:', authors);
-    console.log('Available categories:', categories);
-    
     setSelectedBook(book)
+    
+    // Handle images array - prioritize images array, fallback to single image_url
+    let imagesArray = [];
+    if (book.images && Array.isArray(book.images) && book.images.length > 0) {
+      imagesArray = book.images;
+    } else if (book.image_url) {
+      imagesArray = [book.image_url];
+    }
+    
     const editFormData = {
       title: book.title || "",
       isbn: book.isbn || "",
@@ -141,14 +158,13 @@ export default function BookManagement() {
       price: book.price || 0,
       stock_quantity: book.stock_quantity || 0,
       image_url: book.image_url || "",
+      images: imagesArray,
       author_id: book.Author?.id || 0,
       category_id: book.Category?.id || 0,
       authorName: book.Author ? `${book.Author.first_name} ${book.Author.last_name}` : "",
       categoryName: book.Category ? book.Category.category_name : "",
     }
     
-    console.log('Form data being set:', JSON.stringify(editFormData, null, 2));
-    console.log('=== EDIT DEBUG END ===');
     setFormData(editFormData)
     setIsEditDialogOpen(true)
   }
@@ -162,18 +178,26 @@ export default function BookManagement() {
         toast.error('Please fill in all required fields (Title, Author, Category, Price)');
         return;
       }
+      
+      // Create FormData for multipart/form-data submission
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('stock_quantity', formData.stock_quantity);
+      formDataToSend.append('author_id', formData.author_id);
+      formDataToSend.append('category_id', formData.category_id);
+      
+      // Add images array as JSON if present
+      if (formData.images && formData.images.length > 0) {
+        formDataToSend.append('images', JSON.stringify(formData.images));
+        // Set first image as primary image_url for backward compatibility
+        formDataToSend.append('image_url', formData.images[0]);
+      } else if (formData.image_url) {
+        formDataToSend.append('image_url', formData.image_url);
+      }
 
-      console.log('Updating book with data:', formData);
-      const response = await booksAPI.update(selectedBook.id, {
-        title: formData.title,
-        description: formData.description,
-        price: formData.price,
-        stock_quantity: formData.stock_quantity,
-        image_url: formData.image_url,
-        author_id: formData.author_id,
-        category_id: formData.category_id
-      })
-      console.log('Update book response:', response);
+      const response = await booksAPI.update(selectedBook.id, formDataToSend);
       
       if (response.data.success) {
         toast.success(response.data.message)
@@ -200,7 +224,7 @@ export default function BookManagement() {
         fetchBooks()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error deleting book:', err);
       toast.error(err.response?.data?.message || 'Error deleting book');
     }
   }
@@ -236,7 +260,7 @@ export default function BookManagement() {
               Add Book
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto dialog-scrollbar">
             <DialogHeader>
               <DialogTitle>Add New Book</DialogTitle>
               <DialogDescription>Add a new book to your inventory</DialogDescription>
@@ -292,12 +316,13 @@ export default function BookManagement() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, image_url: e.target.value }))}
-                  placeholder="https://example.com/book-cover.jpg"
+                <Label htmlFor="images">Book Images (1-5 images)</Label>
+                <SimpleImageUpload
+                  value={formData.images}
+                  onChange={(images) => setFormData((prev) => ({ ...prev, images: images }))}
+                  disabled={isLoading}
+                  placeholder="Upload book images (1-5 images)"
+                  maxImages={5}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -445,7 +470,7 @@ export default function BookManagement() {
 
       {/* Edit Book Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto dialog-scrollbar">
           <DialogHeader>
             <DialogTitle>Edit Book</DialogTitle>
             <DialogDescription>Update book information</DialogDescription>
@@ -468,12 +493,15 @@ export default function BookManagement() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-image_url">Image URL</Label>
-              <Input
-                id="edit-image_url"
-                value={formData.image_url}
-                onChange={(e) => setFormData((prev) => ({ ...prev, image_url: e.target.value }))}
-                placeholder="https://example.com/book-cover.jpg"
+              <Label htmlFor="edit-images">Book Images (1-5 images)</Label>
+              <SimpleImageUpload
+                value={formData.images}
+                onChange={(images) => {
+                  setFormData((prev) => ({ ...prev, images: images }));
+                }}
+                disabled={isLoading}
+                placeholder="Upload book images (1-5 images)"
+                maxImages={5}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">

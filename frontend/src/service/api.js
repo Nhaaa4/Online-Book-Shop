@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
 // Create axios instance
 const api = axios.create({
@@ -49,6 +49,14 @@ export const authAPI = {
   login: (credentials) => api.post('/api/users/login', credentials),
   register: (userData) => api.post('/api/users/register', userData),
   getProfile: () => api.get('/api/users/profile'),
+  updateProfile: (userData) => api.put('/api/users/profile', userData),
+  updateProfileImage: (formData) => {
+    return api.post('/api/users/upload-avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
 };
 
 // Books API
@@ -80,4 +88,5 @@ export const addressAPI = {
   getCommunes: (districtId) => api.get(`/api/address/communes?district_id=${districtId}`),
   getVillages: (communeId) => api.get(`/api/address/villages?commune_id=${communeId}`),
   getUserAddress: () => api.get('/api/address/user'),
+  updateUserAddress: (data) => api.put('/api/address/user', data),
 };

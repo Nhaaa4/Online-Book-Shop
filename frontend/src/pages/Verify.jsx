@@ -22,7 +22,7 @@ export default function Verify() {
           description: <span className="text-gray-500">Your payment has been successfully verified.</span>,
         });
         setCartItems({});
-        localStorage.removeItem('cart');
+        localStorage.removeItem('bookshop_cart');
         navigate("/profile?tab=orders");
       } else {
         toast("Payment verification failed.", {

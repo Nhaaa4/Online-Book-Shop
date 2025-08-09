@@ -24,7 +24,6 @@ export default function PermissionManagement() {
     try {
       setIsLoading(true);
       const responsePermissions = await rolesAPI.getPermissions();
-      console.log('Permissions response:', responsePermissions.data.data);
       setPermissions(responsePermissions.data.data);
     } catch (error) {
       console.error("Error loading permissions:", error);
@@ -61,7 +60,7 @@ export default function PermissionManagement() {
         resetPermissionForm()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error creating permission:', err);
       toast.error(err.response?.data?.message || 'Error creating permission');
     } finally {
       setIsSubmittingPermission(false)
@@ -94,7 +93,7 @@ export default function PermissionManagement() {
         resetPermissionForm()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error updating permission:', err);
       toast.error(err.response?.data?.message || 'Error updating permission');
     } finally {
       setIsSubmittingPermission(false)
@@ -113,7 +112,7 @@ export default function PermissionManagement() {
         fetchPermissions() // Refresh data
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error deleting permission:', err);
       toast.error(err.response?.data?.message || 'Error deleting permission');
     }
   };

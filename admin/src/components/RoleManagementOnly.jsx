@@ -36,9 +36,6 @@ export default function RoleManagement() {
       const responseRoles = await rolesAPI.getAll();
       const responsePermissions = await rolesAPI.getPermissions();
       
-      console.log('Roles response:', responseRoles.data.data);
-      console.log('Permissions response:', responsePermissions.data.data);
-      
       setRoles(responseRoles.data.data);
       setPermissions(responsePermissions.data.data);
     } catch (error) {
@@ -75,7 +72,7 @@ export default function RoleManagement() {
         resetForm()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error creating role:', err);
       toast.error(err.response?.data?.message || 'Error creating role');
     } finally {
       setIsSubmitting(false)
@@ -88,10 +85,6 @@ export default function RoleManagement() {
     // Extract permission IDs from the role's permissions array
     const existingPermissions = role.Permissions || role.permissions || [];
     const permissionIds = existingPermissions.map(permission => permission.id || permission.permission_id);
-    
-    console.log('Editing role:', role);
-    console.log('Existing permissions:', existingPermissions);
-    console.log('Extracted permission IDs:', permissionIds);
     
     setFormData({
       role: role.role,
@@ -117,7 +110,7 @@ export default function RoleManagement() {
         resetForm()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error updating role:', err);
       toast.error(err.response?.data?.message || 'Error updating role');
     } finally {
       setIsSubmitting(false)
@@ -132,7 +125,7 @@ export default function RoleManagement() {
         fetchRoles()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error deleting role:', err);
       toast.error(err.response?.data?.message || 'Error deleting role');
     }
   };

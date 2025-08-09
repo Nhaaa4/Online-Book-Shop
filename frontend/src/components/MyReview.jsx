@@ -14,7 +14,6 @@ export default function MyReview() {
     try {
       const response = await reviewsAPI.getMyReviews();
       setUserReviews(response.data.data);
-      console.log("User reviews fetched:", response.data.data);
     } catch (error) {
       console.error("Error fetching user reviews:", error);
     }

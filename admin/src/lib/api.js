@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
 // Create axios instance
 const api = axios.create({
@@ -83,9 +83,37 @@ export const booksAPI = {
   getCount: () => api.get('/api/books/number'),
   getAuthors: () => api.get('/api/books/authors'),
   getCategories: () => api.get('/api/books/categories'),
-  create: (bookData) => api.post('/api/books', bookData),
-  update: (id, bookData) => api.patch(`/api/books/${id}`, bookData),
+  create: (bookData) => {
+    // Handle FormData for file uploads
+    const config = bookData instanceof FormData ? 
+      { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return api.post('/api/books', bookData, config);
+  },
+  update: (id, bookData) => {
+    // Handle FormData for file uploads
+    const config = bookData instanceof FormData ? 
+      { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    return api.patch(`/api/books/${id}`, bookData, config);
+  },
   delete: (id) => api.delete(`/api/books/${id}`),
+  // Image upload specific endpoints
+  uploadImage: (imageFile) => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return api.post('/api/books/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  uploadImages: (imageFiles) => {
+    const formData = new FormData();
+    imageFiles.forEach(file => {
+      formData.append('images', file);
+    });
+    return api.post('/api/books/upload-images', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  deleteImage: (imageUrl) => api.delete('/api/books/delete-image', { data: { image_url: imageUrl } }),
 };
 
 // Orders API

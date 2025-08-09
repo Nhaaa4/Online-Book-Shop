@@ -13,9 +13,7 @@ function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      console.log('Attempting login with:', { email, password: '***' });
       const response = await authAPI.login({ email, password });
-      console.log('Login response:', response);
 
       if (response.data.token) {
         toast("Login successful", {

@@ -38,10 +38,9 @@ export default function UserManagement() {
     try {
       setIsLoading(true)
       const response = await usersAPI.getAll()
-      console.log('Users response:', response.data.data)
       setUsers(response.data.data)
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching users:', err);
     } finally {
         setIsLoading(false)
     }
@@ -51,10 +50,9 @@ export default function UserManagement() {
     try {
       setIsLoading(true)
       const response = await rolesAPI.getAll()
-      console.log('Roles response:', response.data.data)
       setRoles(response.data.data)
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching roles:', err);
       toast.error(err.response.data.message);
     } finally {
         setIsLoading(false)
@@ -90,7 +88,7 @@ export default function UserManagement() {
         resetForm()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error creating user:', err);
       toast.error(err.response?.data?.message || 'Error creating user');
     } finally {
       setIsSubmitting(false)
@@ -122,7 +120,7 @@ export default function UserManagement() {
           resetForm()
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error updating user:', err);
       toast.error(err.response?.data?.message || 'Error updating user');
     } finally {
       setIsSubmitting(false)
@@ -137,7 +135,7 @@ export default function UserManagement() {
           fetchUsers()
         }
       } catch (err) {
-        console.log(err);
+        console.error('Error deleting user:', err);
         toast.error(err.response?.data?.message || 'Error deleting user');
       }
     };
@@ -229,7 +227,6 @@ export default function UserManagement() {
                 <Select
                   value={formData.role_id?.toString() || ""}
                   onValueChange={(value) => {
-                    console.log('Role selected:', value);
                     setFormData((prev) => ({ ...prev, role_id: Number.parseInt(value) }))
                   }}
                 >
