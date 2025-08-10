@@ -2,7 +2,7 @@ import db from '../db/models/index.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import validator from 'validator'
-import { col, fn, Op } from 'sequelize'
+import { col, fn } from 'sequelize'
 import role from '../db/models/role.js'
 import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary'
@@ -125,7 +125,6 @@ export const getUserData = asyncHandler(async (req, res) => {
   const userData = {
     fullName: `${user.first_name} ${user.last_name}`,
     email: user.email,
-    phone_number: user.phone_number,
     avatar: user.avatar,
     joinDate: user.createdAt,
     totalOrders,
@@ -325,75 +324,6 @@ export const uploadAvatarImage = asyncHandler(async (req, res) => {
     message: 'Avatar uploaded successfully',
     data: {
       avatar: avatarUrl
-    }
-  });
-});
-
-// Update user profile information
-export const updateProfile = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { first_name, last_name, email, phone_number } = req.body;
-
-  // Validation
-  if (!first_name || !last_name || !email) {
-    return res.status(400).json({ success: false, message: "First name, last name, and email are required" });
-  }
-
-  // Validate email format
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ success: false, message: "Please enter a valid email!" });
-  }
-
-  // Get current user
-  const user = await User.findByPk(userId);
-  if (!user) {
-    return res.status(404).json({ success: false, message: 'User not found' });
-  }
-
-  // Check if email is already taken by another user
-  if (email !== user.email) {
-    const existingUser = await User.findOne({ 
-      where: { 
-        email,
-        id: { [Op.ne]: userId } // Not equal to current user ID
-      } 
-    });
-    if (existingUser) {
-      return res.status(409).json({ success: false, message: "Email already exists" });
-    }
-  }
-
-  // Check if phone number is already taken by another user (if provided)
-  if (phone_number && phone_number !== user.phone_number) {
-    const existingPhone = await User.findOne({ 
-      where: { 
-        phone_number,
-        id: { [Op.ne]: userId } // Not equal to current user ID
-      } 
-    });
-    if (existingPhone) {
-      return res.status(409).json({ success: false, message: "Phone number already exists" });
-    }
-  }
-
-  // Update user information
-  await user.update({
-    first_name,
-    last_name,
-    email,
-    phone_number: phone_number || user.phone_number
-  });
-
-  res.status(200).json({
-    success: true,
-    message: 'Profile updated successfully',
-    data: {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      phone_number: user.phone_number,
-      fullName: `${user.first_name} ${user.last_name}`
     }
   });
 });
