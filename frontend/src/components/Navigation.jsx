@@ -12,9 +12,8 @@ import { useState, useEffect } from "react"
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [user, setUser] = useState(null)
   const pathname = useLocation().pathname
-  const { token, setToken, navigate, getCartCount } = useShopContext()
+  const { token, setToken, navigate, getCartCount, user } = useShopContext()
 
   // Handle scroll effect for modern navbar
   useEffect(() => {
@@ -25,33 +24,6 @@ export default function Navigation() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  // Fetch user profile when token exists
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (token) {
-        try {
-          const response = await fetch('http://localhost:4000/api/users/profile', {
-            headers: {
-              'token': token
-            }
-          })
-          if (response.ok) {
-            const data = await response.json()
-            if (data.success) {
-              setUser(data.data)
-            }
-          }
-        } catch (error) {
-          console.error('Failed to fetch user profile:', error)
-        }
-      } else {
-        setUser(null)
-      }
-    }
-
-    fetchUserProfile()
-  }, [token])
 
   const totalItems = getCartCount()
   const logout = () => {

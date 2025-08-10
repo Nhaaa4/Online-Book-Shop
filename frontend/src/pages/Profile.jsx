@@ -17,7 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Profile() {
-  const { token } = useShopContext()
+  const { token, refreshUser } = useShopContext()
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "orders"; // default tab
@@ -123,6 +123,7 @@ export default function Profile() {
   const fetchUserInfo = async () => {
     try {
       const response = await authAPI.getProfile();
+      console.log('Profile API response:', response.data.data); // Debug log
       setUserData(response.data.data);
       
       // Populate edit form with current data
@@ -255,8 +256,9 @@ export default function Profile() {
       if (response.data.success) {
         toast.success('Profile updated successfully!');
         setIsEditDialogOpen(false);
-        // Refresh user data
+        // Refresh user data in both profile and navbar
         fetchUserInfo();
+        refreshUser(); // This will update the navbar
       } else {
         toast.error(response.data.message || 'Failed to update profile');
       }
@@ -507,15 +509,13 @@ export default function Profile() {
                     <div className="text-sm text-gray-800">{userData.email}</div>
                   </div>
                 </div>
-                {userData.phone_number && (
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Phone className="h-5 w-5 text-pink-600" />
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wide">Phone</div>
-                      <div className="text-sm text-gray-800">{userData.phone_number}</div>
-                    </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Phone className="h-5 w-5 text-pink-600" />
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Phone</div>
+                    <div className="text-sm text-gray-800">{userData.phone_number || 'Not provided'}</div>
                   </div>
-                )}
+                </div>
               </div>
             </CardContent>
           </Card>

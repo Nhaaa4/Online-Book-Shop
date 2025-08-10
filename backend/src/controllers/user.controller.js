@@ -125,6 +125,7 @@ export const getUserData = asyncHandler(async (req, res) => {
   const userData = {
     fullName: `${user.first_name} ${user.last_name}`,
     email: user.email,
+    phone_number: user.phone_number,
     avatar: user.avatar,
     joinDate: user.createdAt,
     totalOrders,
@@ -325,5 +326,89 @@ export const uploadAvatarImage = asyncHandler(async (req, res) => {
     data: {
       avatar: avatarUrl
     }
+  });
+});
+
+// Update user profile
+export const updateProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { first_name, last_name, email, phone_number } = req.body;
+
+  // Validate input
+  if (!first_name || !last_name || !email) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "First name, last name, and email are required" 
+    });
+  }
+
+  // Validate email format
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Please enter a valid email" 
+    });
+  }
+
+  // Check if user exists
+  const user = await User.findByPk(userId);
+  if (!user) {
+    return res.status(404).json({ 
+      success: false, 
+      message: "User not found" 
+    });
+  }
+
+  // Check if email is already taken by another user
+  if (email !== user.email) {
+    const existingUser = await User.findOne({ 
+      where: { 
+        email,
+        id: { [db.Sequelize.Op.ne]: userId } // Exclude current user
+      } 
+    });
+    
+    if (existingUser) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "Email is already in use by another account" 
+      });
+    }
+  }
+
+  // Check if phone number is already taken by another user (if provided)
+  if (phone_number && phone_number !== user.phone_number) {
+    const existingUserPhone = await User.findOne({ 
+      where: { 
+        phone_number,
+        id: { [db.Sequelize.Op.ne]: userId } // Exclude current user
+      } 
+    });
+    
+    if (existingUserPhone) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "Phone number is already in use by another account" 
+      });
+    }
+  }
+
+  // Update user profile
+  await user.update({
+    first_name,
+    last_name,
+    email,
+    phone_number
+  });
+
+  // Return updated user data (excluding password)
+  const updatedUser = await User.findByPk(userId, {
+    attributes: { exclude: ['password'] }
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'Profile updated successfully',
+    data: updatedUser
   });
 });

@@ -117,3 +117,94 @@ export async function getUserAddress(req, res) {
     res.status(500).json({ success: false, message: "Failed to get address" });
   }
 }
+
+// Update user address
+export async function updateUserAddress(req, res) {
+  try {
+    const userId = req.user.id;
+    const { first_name, last_name, phone_number, village_id } = req.body;
+
+    // Validate required fields
+    if (!village_id) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Village selection is required" 
+      });
+    }
+
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Check if village exists
+    const village = await Village.findByPk(village_id);
+    if (!village) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid village selected" 
+      });
+    }
+
+    // Prepare update data - use existing values if new ones aren't provided
+    const updateData = {
+      village_id,
+      // Only update name and phone if provided, otherwise keep existing values
+      ...(first_name && { first_name }),
+      ...(last_name && { last_name }),
+      ...(phone_number && { phone_number })
+    };
+
+    // Update user address
+    await user.update(updateData);
+
+    // Return updated address with location names
+    const updatedAddress = await User.findByPk(userId, {
+      attributes: [
+        'first_name',
+        'last_name',
+        'email',
+        'phone_number',
+        [col('Village.name'), 'village'],
+        [col('Village.Commune.name'), 'commune'],
+        [col('Village.Commune.District.name'), 'district'],
+        [col('Village.Commune.District.Province.name'), 'province']
+      ],
+      include: [
+        {
+          model: Village,
+          attributes: [],
+          include: [
+            {
+              model: Commune,
+              attributes: [],
+              include: [
+                {
+                  model: District,
+                  attributes: [],
+                  include: [
+                    {
+                      model: Province,
+                      attributes: []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      raw: true
+    });
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Address updated successfully",
+      data: updatedAddress 
+    });
+  } catch (error) {
+    console.error("Failed to update address:", error);
+    res.status(500).json({ success: false, message: "Failed to update address" });
+  }
+}

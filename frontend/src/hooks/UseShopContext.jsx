@@ -1,14 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useEffect, useState, useContext } from 'react';
+import { createContext, useEffect, useState, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { booksAPI } from '../service/api';
+import { booksAPI, authAPI } from '../service/api';
 
 const ShopContext = createContext()
 
 export default function ShopContextProvider({ children }) {
   const navigate = useNavigate()
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState({})
   const [books, setBooks] = useState([])
   const [categories, setCategories] = useState([])
@@ -92,6 +93,28 @@ export default function ShopContextProvider({ children }) {
     });
   }
 
+  // User management functions
+  const fetchUser = useCallback(async () => {
+    if (!token) {
+      setUser(null);
+      return;
+    }
+    
+    try {
+      const response = await authAPI.getProfile();
+      if (response.data.success) {
+        setUser(response.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      setUser(null);
+    }
+  }, [token]);
+
+  const refreshUser = () => {
+    fetchUser();
+  };
+
   const [cartData, setCartData] = useState([]);
   const totalPrice = cartData.reduce((total, item) => total + (item.price * item.quantity), 0);
 
@@ -125,6 +148,10 @@ export default function ShopContextProvider({ children }) {
     }
   }, [token]);
 
+  useEffect(() => {
+    fetchUser();
+  }, [token]);
+
   const values = {
     token,
     setToken,
@@ -140,7 +167,9 @@ export default function ShopContextProvider({ children }) {
     updateQuantity,
     removeFromCart,
     totalPrice,
-    cartData
+    cartData,
+    user,
+    refreshUser
   };
 
   return (
